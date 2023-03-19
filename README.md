@@ -1,40 +1,86 @@
-# Backend Coding Challenge
 
-The first thing is to welcome you to this test, congratulations for successfully passing the previous steps, thank you
-for the time invested in the process and of course good luck.
 
-At Idoven we have a need, we want to set up a microservice that receives electrocardiograms (ECG) and returns a series
-of information about them, for example, calculating the number of zero crossings of the signal.
+## TODO
+### Phase 1
+- [X] Editorconfig
+- [X] gitignore
+- [X] Pre-commit
+  - [X] MyPy
+  - [X] Ruff (Black style)
+- [X] Basic Test Structure
+- [X] Basic App Structure
+  - [X] Views
+  - [X] Swagger Docs
+  - [X] Logging
+- [X] Basic Configuration
+- [X] Basic CI
+  - [X] Workflow for testing
+- [X] Add Database
 
-An ECG is represented by a series of numerical values that can be either positive or negative.
+## Phase 2
+- [ ] App creation
+  - [ ] Models
+  - [ ] Views
 
-The idea is to set up an API that acts as a service and with two endpoints, one to receive the ECGs to be processed and
-another where we return information.
+## Phase 3
+- [ ] Write docs
+- [ ] Manual testing
+- [ ] Review
 
-ECGs have this structure:
+# Idoven ECG API
 
+TODO: Fill me
+
+## Prerequisites
+
+- Python 3.10
+- [Poetry](https://python-poetry.org/docs/#installation) for dependency management and packaging
+- Docker for building and running the Docker container
+
+## Getting Started
+
+### Install dependencies
+
+To install the project's dependencies, run:
+
+```bash
+make install
 ```
-- id: unique identifier for each ECG
-- date: creation date
-- leads: list of:
-  - name: lead identifier (for example: I, II, III, aVR, aVL and aVF, V1, V2…)
-  - number of samples: sample size of the signal, this value does not always come
-  - signal: list of integer values
+
+## Run tests
+To run tests for your project, execute:
+
+```bash
+make test
 ```
 
-The information that the endpoint must return will be the number of times that each of the ECG channels passes through
-zero. For now we do not need more information.
+## Lint the code
+To check your code for linting issues, run:
+```bash
+make lint
+```
 
-Freedom is given to use language, technologies, frameworks, documentation, tests... We currently use Python 3.10.9,
-FastAPI, JIRA, GitHub.
+## Format the code
+To automatically format your code according to the project's style guide, use:
+```bash
+make format
+```
 
-It must be taken into account that this service is going to scale, and more functionalities are going to be added to it
-and the endpoint of obtaining information about an ECG is going to calculate more data.
+## Build Docker image
+To build the Docker image for your project, run:
+```bash
+make build
+```
 
-In addition, we are thinking of opening this service to external clients, so we are considering using a user
-authentication system for both endpoints. And with the necessary security to only be able to access the ECGs created by
-yourself.
-And it would be nice to have an ADMIN role that is in charge of registering new users. This user would not have access
-to send or obtain information about the ECGs.
+## Run Docker container
+To run your project in a Docker container, execute:
+```
+make run
+```
+This command maps port 8000 on your host machine to port 8000 in the Docker container.
 
-The test solution must be posted on this repository like a pull request.
+## Clean up generated files
+To remove any generated files, such as .pyc files and __pycache__ directories, run:
+```bash
+make clean
+```

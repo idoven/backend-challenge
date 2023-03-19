@@ -1,7 +1,18 @@
-.DS_Store
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
+*$py.class
+
+# Local development settings
+.env
+.env.*
+venv/
+.vscode/
+.idea/
+*.pydevproject
+*.project
+*.metadata
+.DS_Store
 
 # C extensions
 *.so
@@ -50,7 +61,6 @@ coverage.xml
 # Sphinx documentation
 docs/_build/
 
-.idea/
 .pytest_cache/
 
 # poetry

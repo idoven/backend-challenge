@@ -18,9 +18,9 @@
 - [X] Add Database
 
 ## Phase 2
-- [ ] App creation
-  - [ ] Models
-  - [ ] Views
+- [X] App creation
+  - [X] Models
+  - [X] Views
 
 ## Phase 3
 - [ ] Write docs

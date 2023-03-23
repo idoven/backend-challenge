@@ -1,28 +1,23 @@
-.PHONY: install test lint format build run clean
+.PHONY: test build run run_new clean
 
-# Install dependencies
-install:
-	poetry install
 
 # Run tests
 test:
-	poetry run pytest tests/
-
-# Lint the code
-lint:
-	poetry run ruff ecg/ tests/
-
-# Format the code
-format:
-	poetry run black ecg/ tests/
+	docker-compose up -d --build
+	docker-compose exec app poetry run pytest -s tests/ ; docker-compose down
 
 # Build Docker image
 build:
-	docker build -t ecg .
+	docker-compose build
 
-# Run Docker container
 run:
-	docker run --rm -it -p 8000:8000 ecg
+	docker-compose up
+
+# Run new docker environment
+run-new:
+	docker-compose down
+	docker-compose up --build
+
 
 # Clean up generated files
 clean:
@@ -30,3 +25,5 @@ clean:
 	find . -type d -name '__pycache__' -exec rm -rf {} +
 	rm -rf .pytest_cache
 	rm -rf .mypy_cache
+	rm -rf .coverage
+	rm -rf .ruff_cache

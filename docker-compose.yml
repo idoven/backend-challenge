@@ -2,25 +2,35 @@ version: '3.8'
 
 services:
   app:
-    build: .
-    image: ecg
+    build:
+      context: .
+      args:
+        RUNNING: DEV
+    image: idoven_ecg
     ports:
       - 8000:8000
+    command:  /bin/sh -c "python manage.py setup-server && uvicorn "main:app" --host "0.0.0.0" --port 8000"
     depends_on:
       - db
+    # For remote debugging
+    stdin_open: true
+    tty: true
     environment:
-      - APP_ENV=development
+      DATABASE_USER: user
+      DATABASE_PASSWORD: password
+      DATABASE_HOST: "db:5432"
 
   db:
-    image: postgres:13
-    ports:
-      - 5432:5432
+    image: "postgres:latest"
     environment:
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=idoven_ecg
-    volumes:
-      - db-data:/var/lib/postgresql/data
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ecg
+    ports:
+      - "5432:5432"
+    # Uncomment the following line to persist data
+    # volumes:
+    #   - db-data:/var/lib/postgresql/data
 
 volumes:
   db-data:

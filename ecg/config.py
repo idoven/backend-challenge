@@ -12,9 +12,19 @@ class Settings(BaseSettings):
     # Database
     database_user: str = "postgres"
     database_host: str = "localhost"
-    # TODO: make this a secret
     database_password: str = "password"
     database_name: str = "ecg"
+
+    # JWT
+    jwt_key: str = "secret"
+
+    @property
+    def database_url(self) -> str:
+        return (
+            f"postgresql://{self.database_user}:"
+            f"{self.database_password}@{self.database_host}"
+            f"/{self.database_name}"
+        )
 
 
 settings = Settings()

@@ -31,9 +31,7 @@ def token():
 def test_create_access_token():
     user = generate_user()
     access_token = create_access_token(data={"sub": user.email})
-    decoded = jwt.decode(
-        access_token, settings.jwt_key, algorithms=["HS256"]
-    )
+    decoded = jwt.decode(access_token, settings.jwt_key, algorithms=["HS256"])
     assert decoded["sub"] == user.email
 
 
@@ -45,7 +43,7 @@ def db_mock(mocker):
 @pytest.mark.asyncio
 async def test_get_current_user(mocker, token, db_mock):
     user = generate_user()
-    mocker.patch('ecg.domains.admin.services.get_user', return_value=user)
+    mocker.patch("ecg.domains.admin.services.get_user", return_value=user)
 
     authenticated_user = await get_current_user(token=token, db=db_mock)
 

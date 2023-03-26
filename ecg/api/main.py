@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from ecg.config import settings
 from .routers.auth import router as auth_router
 from .routers.admin import router as admin_router
+from .routers.ecg import router as ecg_router
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
@@ -23,5 +24,6 @@ def get_app():
     # Add routers
     app.include_router(prefix="/auth", router=auth_router)
     app.include_router(prefix="/admin", router=admin_router)
+    app.include_router(prefix="/api/v1", router=ecg_router)
 
     return app

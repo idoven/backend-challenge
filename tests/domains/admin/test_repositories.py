@@ -3,13 +3,8 @@ from asyncpg import UniqueViolationError
 from databases import Database
 from uuid import uuid4
 
-from ecg.domains.admin.repositories import (
-    create,
-    get,
-    delete
-)
-from ecg.sql.admin import CREATE_USER_QUERY, \
-    GET_USER_QUERY, DELETE_USER_QUERY
+from ecg.domains.admin.repositories import create, get, delete
+from ecg.sql.admin import CREATE_USER_QUERY, GET_USER_QUERY, DELETE_USER_QUERY
 from ecg.domains.admin.models import User, RoleEnum
 from ecg.domains.admin.exceptions import NotUniqueUserError
 
@@ -69,8 +64,7 @@ async def test_get_not_found(db_mock, user_data):
     result = await get(db_mock, user_data["email"])
 
     db_mock.fetch_one.assert_called_once_with(
-        GET_USER_QUERY,
-        {"email": user_data["email"]}
+        GET_USER_QUERY, {"email": user_data["email"]}
     )
     assert result is None
 
@@ -79,5 +73,6 @@ async def test_get_not_found(db_mock, user_data):
 async def test_delete_user(db_mock, user_data):
     await delete(db_mock, user_data["email"])
 
-    db_mock.execute.assert_called_once_with(DELETE_USER_QUERY,
-                                            {"email": user_data["email"]})
+    db_mock.execute.assert_called_once_with(
+        DELETE_USER_QUERY, {"email": user_data["email"]}
+    )

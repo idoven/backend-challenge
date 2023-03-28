@@ -1,4 +1,5 @@
 from databases import Database
+
 from ecg.config import settings
 
 # Create a Database instance

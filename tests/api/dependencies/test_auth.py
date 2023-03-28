@@ -1,14 +1,11 @@
-import pytest
-from fastapi import HTTPException, status
 import jwt
-
-from ecg.api.dependencies.auth import (
-    create_access_token,
-    get_current_user,
-)
-from ecg.config import settings
-from ecg.domains.admin.models import User, RoleEnum
+import pytest
 from databases import Database
+from fastapi import HTTPException, status
+
+from ecg.api.dependencies.auth import create_access_token, get_current_user
+from ecg.config import settings
+from ecg.domains.admin.models import RoleEnum, User
 
 
 # Helper function to generate a user

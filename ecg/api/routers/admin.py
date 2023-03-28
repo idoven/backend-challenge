@@ -1,19 +1,14 @@
 from databases import Database
-from fastapi import APIRouter, HTTPException, status, Depends
-from pydantic import BaseModel
+from fastapi import APIRouter, Depends, HTTPException, status
 
+import ecg.domains.admin.exceptions as admin_exceptions
+import ecg.domains.admin.services as admin_services
 from ecg.api.dependencies.auth import get_current_user
 from ecg.api.dependencies.database import get_db
-import ecg.domains.admin.services as admin_services
-import ecg.domains.admin.exceptions as admin_exceptions
+from ecg.api.schemas import UserIn
 from ecg.domains.admin.models import User
 
 router = APIRouter()
-
-
-class UserIn(BaseModel):
-    email: str
-    password: str
 
 
 @router.post("/users")

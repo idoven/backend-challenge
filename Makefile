@@ -23,7 +23,7 @@ run-new:
 clean:
 	find . -type f -name '*.pyc' -delete
 	find . -type d -name '__pycache__' -exec rm -rf {} +
-	rm -rf .pytest_cache
+	rm -rf tests/.pytest_cache
 	rm -rf .mypy_cache
 	rm -rf .coverage
 	rm -rf .ruff_cache

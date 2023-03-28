@@ -6,17 +6,17 @@ from pathlib import Path
 from uuid import UUID
 
 import pytest
-from fastapi.testclient import TestClient
 from databases import Database
+from fastapi.testclient import TestClient
 
 from ecg.api.dependencies.database import get_db
-from ecg.domains.admin.models import User, RoleEnum
 from ecg.domains.admin import repositories as admin_repo
-from ecg.domains.ecg.models import ECG, LeadTypeEnum
+from ecg.domains.admin.models import RoleEnum, User
 from ecg.domains.ecg import repositories as ecg_repo
-from main import app
+from ecg.domains.ecg.models import ECG, LeadTypeEnum
 from ecg.sql.admin import CREATE_USERS_TABLE_SQL
 from ecg.sql.ecg import CREATE_ECG_TABLE_SQL, CREATE_LEAD_TABLE_SQL
+from main import app
 
 sys.path.insert(0, str(Path(__file__).parent))
 
@@ -54,17 +54,17 @@ pytest_ecg = {
 }
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture()
 def test_user():
     return User(**pytest_user)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture()
 def test_admin():
     return User(**pytest_admin)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture()
 def test_ecg():
     return ECG(**pytest_ecg)
 
@@ -132,3 +132,20 @@ def test_client(setup_teardown_database):
     app.dependency_overrides[get_db] = _override_get_db
     with TestClient(app) as test_client:
         yield test_client
+
+
+def pytest_addoption(parser):
+    parser.addoption("--skip-db", action="store_true", default=False,
+                     help="skip tests that need a database")
+
+
+def pytest_configure(config):
+    config.addinivalue_line("markers", "needs_db: mark test as requiring a database")
+
+
+def pytest_collection_modifyitems(config, items):
+    if config.getoption("--skip-db"):
+        skip_db = pytest.mark.skip(reason="skipping test that needs a database")
+        for item in items:
+            if "needs_db" in item.keywords:
+                item.add_marker(skip_db)

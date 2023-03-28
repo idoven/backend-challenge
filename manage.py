@@ -1,6 +1,7 @@
 #!/usr/bin/env python
-import click
 import asyncio
+
+import click
 
 from ecg.cli import database as cli_database
 
@@ -13,6 +14,8 @@ def cli():
 def setup_server():
     asyncio.run(cli_database.create_user_table())
     asyncio.run(cli_database.populate_user_table())
+    asyncio.run(cli_database.create_ecgs_tables())
+    asyncio.run(cli_database.populate_ecgs_tables())
 
 if __name__ == "__main__":
     cli()

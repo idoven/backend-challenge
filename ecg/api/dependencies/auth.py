@@ -1,16 +1,15 @@
 from datetime import datetime, timedelta
 from typing import Optional
 
+import jwt
 from databases import Database
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-import jwt
 
 from ecg.api.dependencies.database import get_db
-from ecg.domains.admin.models import User
-from ecg.domains.admin import services as admin_services
-
 from ecg.config import settings
+from ecg.domains.admin import services as admin_services
+from ecg.domains.admin.models import User
 
 # Secret key and algorithm for JWT
 SECRET_KEY = settings.jwt_key

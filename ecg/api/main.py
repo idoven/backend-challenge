@@ -3,8 +3,9 @@ import logging
 from fastapi import FastAPI
 
 from ecg.config import settings
-from .routers.auth import router as auth_router
+
 from .routers.admin import router as admin_router
+from .routers.auth import router as auth_router
 from .routers.ecg import router as ecg_router
 
 logging.basicConfig(

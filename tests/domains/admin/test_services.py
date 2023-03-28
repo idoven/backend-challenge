@@ -1,26 +1,26 @@
-import pytest
-
-from databases import Database
-from passlib.context import CryptContext
 from uuid import uuid4
 
+import pytest
+from databases import Database
+from passlib.context import CryptContext
+
+from ecg.domains.admin import repositories as repo
 from ecg.domains.admin.exceptions import (
     UserAccessDeniedError,
-    UserSelfDeletionError,
     UserNotFoundError,
+    UserSelfDeletionError,
 )
+from ecg.domains.admin.models import RoleEnum, User
 from ecg.domains.admin.services import (
     authenticate_user,
-    generate_user,
-    hash_password,
-    verify_password,
-    is_admin,
     create_user,
     delete_user,
+    generate_user,
     get_user,
+    hash_password,
+    is_admin,
+    verify_password,
 )
-from ecg.domains.admin.models import User, RoleEnum
-from ecg.domains.admin import repositories as repo
 
 
 @pytest.fixture

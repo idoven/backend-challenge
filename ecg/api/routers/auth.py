@@ -1,14 +1,13 @@
 from datetime import timedelta
 
 from databases import Database
-from fastapi import APIRouter, HTTPException, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 
 from ecg.api.dependencies.auth import create_access_token
 from ecg.api.dependencies.database import get_db
-from ecg.domains.admin.services import authenticate_user
 from ecg.domains.admin.exceptions import UserAccessDeniedError
-
+from ecg.domains.admin.services import authenticate_user
 
 router = APIRouter()
 

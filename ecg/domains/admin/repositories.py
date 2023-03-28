@@ -1,9 +1,10 @@
 from asyncpg import UniqueViolationError
 from databases import Database
 
+from ecg.sql.admin import CREATE_USER_QUERY, DELETE_USER_QUERY, GET_USER_QUERY
+
 from .exceptions import NotUniqueUserError
 from .models import User
-from ecg.sql.admin import CREATE_USER_QUERY, GET_USER_QUERY, DELETE_USER_QUERY
 
 
 async def create(db: Database, user: User) -> User:

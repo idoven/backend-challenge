@@ -1,4 +1,5 @@
 import pytest
+
 from ecg.domains.ecg.services import calculate_zero_crossings
 
 

@@ -1,5 +1,7 @@
-from fastapi import status
 from datetime import timedelta
+
+import pytest
+from fastapi import status
 
 from ecg.api.dependencies.auth import create_access_token
 from ecg.domains.admin.models import User
@@ -12,8 +14,8 @@ def create_test_token(user: User):
     )
     return token
 
-
-async def test_add_ecg(test_client, test_user):
+@pytest.mark.needs_db
+def test_add_ecg(test_client, test_user):
     data = {
         "id": "string",
         "date": "2021-01-01T15:20:55.495Z",
@@ -38,8 +40,8 @@ async def test_add_ecg(test_client, test_user):
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {"message": "ECG successfully added"}
 
-
-async def test_get_ecg(test_client, test_user, test_ecg):
+@pytest.mark.needs_db
+def test_get_ecg(test_client, test_user, test_ecg):
     token = create_test_token(test_user)
     response = test_client.get(
         f"/api/v1/ecg/{test_ecg.id}",
@@ -54,8 +56,8 @@ async def test_get_ecg(test_client, test_user, test_ecg):
         ],
     }
 
-
-async def test_get_ecg_not_found(test_client, test_user, test_admin, test_ecg):
+@pytest.mark.needs_db
+def test_get_ecg_not_found(test_client, test_user, test_admin, test_ecg):
     token = create_test_token(test_user)
     response = test_client.get(
         "/api/v1/ecg/nonexistent_ecg_id",

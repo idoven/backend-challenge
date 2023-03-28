@@ -1,12 +1,13 @@
+from uuid import uuid4
+
 import pytest
 from asyncpg import UniqueViolationError
 from databases import Database
-from uuid import uuid4
 
-from ecg.domains.admin.repositories import create, get, delete
-from ecg.sql.admin import CREATE_USER_QUERY, GET_USER_QUERY, DELETE_USER_QUERY
-from ecg.domains.admin.models import User, RoleEnum
 from ecg.domains.admin.exceptions import NotUniqueUserError
+from ecg.domains.admin.models import RoleEnum, User
+from ecg.domains.admin.repositories import create, delete, get
+from ecg.sql.admin import CREATE_USER_QUERY, DELETE_USER_QUERY, GET_USER_QUERY
 
 
 @pytest.fixture

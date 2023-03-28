@@ -3,9 +3,9 @@ from uuid import uuid4
 from databases import Database
 from passlib.context import CryptContext
 
-from .exceptions import UserAccessDeniedError, UserNotFoundError, UserSelfDeletionError
 from . import repositories as repo
-from .models import User, RoleEnum
+from .exceptions import UserAccessDeniedError, UserNotFoundError, UserSelfDeletionError
+from .models import RoleEnum, User
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

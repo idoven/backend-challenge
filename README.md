@@ -38,3 +38,12 @@ And it would be nice to have an ADMIN role that is in charge of registering new 
 to send or obtain information about the ECGs.
 
 The test solution must be posted on this repository like a pull request.
+
+
+Challenge solved by Javier Alfonso
+
+Prepare your local machine doing as follows
+
+* Create a virtualenv with anaconda i.e. using python 3.10
+* run the app on local machine: uvicorn main:app --reload
+* Once up and running go to http://127.0.0.1:8000/docs and see the api docs

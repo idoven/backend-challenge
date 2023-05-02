@@ -1,40 +1,75 @@
-# Backend Coding Challenge
+Backend Coding Challenge Idoven (Santiago Alvarez)
+====================================
 
-The first thing is to welcome you to this test, congratulations for successfully passing the previous steps, thank you
-for the time invested in the process and of course good luck.
+API made in Django REST. It is needed to have installed make command and Docker to run the app.
+A Postgres database was used to persist the information.
+Flake8 package was used as a code linter.
 
-At Idoven we have a need, we want to set up a microservice that receives electrocardiograms (ECG) and returns a series
-of information about them, for example, calculating the number of zero crossings of the signal.
+## Run local environment
 
-An ECG is represented by a series of numerical values that can be either positive or negative.
+To run the container please execute the following command:
 
-The idea is to set up an API that acts as a service and with two endpoints, one to receive the ECGs to be processed and
-another where we return information.
+    make up
 
-ECGs have this structure:
+Once the command is executed go to the following link http://localhost:8000. You will have access to swagger
+in order to test the API
 
-```
-- id: unique identifier for each ECG
-- date: creation date
-- leads: list of:
-  - name: lead identifier (for example: I, II, III, aVR, aVL and aVF, V1, V2…)
-  - number of samples: sample size of the signal, this value does not always come
-  - signal: list of integer values
-```
+## Test the API
+1) Create a superuser (admin role)
 
-The information that the endpoint must return will be the number of times that each of the ECG channels passes through
-zero. For now we do not need more information.
+    make superuser
 
-Freedom is given to use language, technologies, frameworks, documentation, tests... We currently use Python 3.10.9,
-FastAPI, JIRA, GitHub.
+2) Once you create the superuser you could access to django admin dashboard in http://localhost:8000/admin with 
+the testing credentials in Makefile in superuser command. Since here superuser could create other users or you 
+have a second option. You can execute the following command to create a test user:
 
-It must be taken into account that this service is going to scale, and more functionalities are going to be added to it
-and the endpoint of obtaining information about an ECG is going to calculate more data.
+    make user
 
-In addition, we are thinking of opening this service to external clients, so we are considering using a user
-authentication system for both endpoints. And with the necessary security to only be able to access the ECGs created by
-yourself.
-And it would be nice to have an ADMIN role that is in charge of registering new users. This user would not have access
-to send or obtain information about the ECGs.
+3) After that you have to make a post request to http://localhost:8000/api/users/token using the email and password 
+with the testing credentials in Makefile in user command.
+This endpoint is going to return a token. 
 
-The test solution must be posted on this repository like a pull request.
+To set the token in the swagger you have to click on "Authorize" and then copy in tokenAuth (apiKey) section in value input field
+the following content:
+
+        Token <value_of_the_token_endpoint>
+
+Then close the window. This token is going to be used to call other endpoints of the app:
+
+
+       # Post request to create an ECG:
+       http://localhost:8000/api/ecgs/
+    
+       # Get request to get ECG´s list for the request user:
+       http://localhost:8000/api/ecgs/
+    
+       # Get request to get ECG detail for a single ecg in the ones of the request user:
+       http://localhost:8000/api/ecgs/<ecg_id>
+
+The number of times that each of the ECG channels passes through zero is shown in signal_zeros field in get endpoints.
+
+## Other useful commands
+
+Build docker image
+
+    make build
+
+Stop containers
+
+    make stop
+
+Stop containers
+
+    make stop
+
+Delete containers
+
+    make rm
+
+Run unit tests
+
+    make test
+
+Run flake8 linter:
+
+    make lint

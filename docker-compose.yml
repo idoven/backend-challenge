@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  ecg:
+    build:
+      dockerfile: Dockerfile
+      context: ecg
+      args:
+        - environment=${ENVIRONMENT}
+    image: ecg:latest
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env.ecg
+    environment:
+      - VIRTUAL_HOST=ecg.localhost
+      - VIRTUAL_PORT=8000
+    depends_on:
+      - ecg-db
+    volumes:
+      - ./ecg/app:/local
+    command: bash -c "gunicorn ecg.wsgi --workers 1 -b 0.0.0.0:8000 --reload"
+
+
+  ecg-db:
+    platform: linux/x86_64 # Necessary for MacOS M1 Chip
+    image: mysql:5.7.37
+    env_file:
+      - .env.ecg
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password
+
+volumes:
+  mysql_data:

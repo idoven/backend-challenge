@@ -1,0 +1,17 @@
+# Django
+djangorestframework==3.14.0
+Django>=3.2,<4
+django-filter==22.1
+django-health-check==3.17.0
+
+# Database
+django-mysql==4.8.0
+mysqlclient==2.1.1
+opentelemetry.instrumentation.pymysql==0.40b0
+PyMySQL==1.0.2
+
+# Swagger
+drf-spectacular==0.26.2
+drf-spectacular-sidecar==2023.5.1
+
+gunicorn==20.1.0

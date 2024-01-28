@@ -19,6 +19,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
+# Auth User Model
+AUTH_USER_MODEL = 'connector.UserModel'
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-@j^qopfkj#nn*t4872(n-vdt(+8e8a6ka13mnzm#kluy*ktxn#"
 
@@ -30,6 +33,8 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'rest_framework',
+    'rest_framework.authtoken',
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -37,7 +42,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "connector",
-    "rest_framework",
     'health_check',
     'drf_spectacular',
     'drf_spectacular_sidecar',
@@ -59,6 +63,35 @@ REST_FRAMEWORK = {
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema'
 }
+
+# Authentication Backends
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+AUTHENTICATION_CLASSES = (
+    'rest_framework.authentication.SessionAuthentication',
+    'rest_framework.authentication.TokenAuthentication',
+)
+#
+# # Account settings
+# ACCOUNT_EMAIL_VERIFICATION = os.environ.get('ACCOUNT_EMAIL_VERIFICATION')
+# ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = os.environ.get('ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS')
+# ACCOUNT_UNIQUE_EMAIL = os.environ.get('ACCOUNT_UNIQUE_EMAIL')
+# ACCOUNT_AUTHENTICATION_METHOD = os.environ.get('ACCOUNT_AUTHENTICATION_METHOD')
+# ACCOUNT_EMAIL_REQUIRED = os.environ.get('ACCOUNT_EMAIL_REQUIRED')
+# ACCOUNT_USERNAME_REQUIRED = os.environ.get('ACCOUNT_USERNAME_REQUIRED')
+# ACCOUNT_USER_MODEL_USERNAME_FIELD = os.environ.get('ACCOUNT_USER_MODEL_USERNAME_FIELD')
+# ACCOUNT_USER_EMAIL_FIELD = os.environ.get('ACCOUNT_USER_EMAIL_FIELD')
+# ACCOUNT_LOGOUT_ON_GET = os.environ.get('ACCOUNT_LOGOUT_ON_GET')
+# ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = os.environ.get('ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION')
+# ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = os.environ.get('ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL')
+# ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = os.environ.get(
+#     'ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL')
+# ACCOUNT_EMAIL_CONFIRMATION_HMAC = os.environ.get('ACCOUNT_EMAIL_CONFIRMATION_HMAC')
+
+# Django REST Framework settings
+REST_USE_JWT = True  # Use JWT for authentication
 
 ROOT_URLCONF = 'ecg.urls'
 

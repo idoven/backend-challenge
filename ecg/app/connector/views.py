@@ -6,6 +6,9 @@ from drf_spectacular.utils import OpenApiResponse, extend_schema
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
+
+from connector import operations
 
 
 @extend_schema(tags=['user'])
@@ -55,6 +58,7 @@ class UserRegistrationView(APIView):
         request=serializer_class
     )
     def post(self, request, *args, **kwargs):
+        # Other than admin that was required, this endpoint also can create/register users
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -63,10 +67,13 @@ class UserRegistrationView(APIView):
 
 
 @extend_schema(tags=['ecg_monitoring'])
-class ECGView(viewsets.ViewSet, LoginRequiredMixin):
+class ECGView(viewsets.ViewSet):
     """
     ECG Monitoring application service
     """
+
+    permission_classes = (AllowAny,)
+
     serializer_class_response = serializers.ECGResponseSerializer
     serializer_class_request = serializers.ECGModelSerializer
 
@@ -81,11 +88,13 @@ class ECGView(viewsets.ViewSet, LoginRequiredMixin):
         },
         request=serializer_class_request
     )
-    def create(self):
+    def create(self, request):
         """
         Receives ECG data for processing
         """
-        pass
+        operations.ECGOperations().create_ecg_record(request.data)
+
+        return Response(f'ECG record created successfully', status=status.HTTP_200_OK)
 
     @extend_schema(
         responses={
@@ -98,8 +107,10 @@ class ECGView(viewsets.ViewSet, LoginRequiredMixin):
             500: OpenApiResponse(description='Internal server error'),
         },
     )
-    def retrieve(self):
+    def retrieve(self, request, ecg_id):
         """
          Returns the number of times each ECG channel crosses zero
         """
-        pass
+        response = operations.ECGOperations().get_zero_crossing_count(ecg_id)
+
+        return Response({'zero_crossing_count': response}, status=status.HTTP_200_OK)

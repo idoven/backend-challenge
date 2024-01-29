@@ -1,5 +1,7 @@
+import json
+
 from rest_framework import serializers
-from connector.models import ECGModel, LeadsModel, UserModel
+from connector.models import ECGModel, UserModel
 from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import make_password
 import re
@@ -60,29 +62,30 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         return super(UserRegistrationSerializer, self).create(validated_data)
 
 
-class LeadsModelSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = LeadsModel
-        fields = ['name', 'num_samples', 'signal']
+# class LeadsModelSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = LeadsModel
+#         fields = '__all__'
+
+
+class LeadsSerializer(serializers.Serializer):
+    LEAD_IDENTIFIERS = ['I', 'II', 'III', 'aVR', 'aVL', 'aVF', 'V1', 'V2', 'V3', 'V4', 'V5', 'V6']
+
+    name = serializers.ChoiceField(choices=[(lead, lead) for lead in LEAD_IDENTIFIERS],
+                                   help_text='The lead identifier of ECG leads')
+
+    num_samples = serializers.IntegerField(required=False, help_text='The sample size of the signal')
+    signal = serializers.CharField(help_text='A list of integer values')
 
 
 class ECGModelSerializer(serializers.ModelSerializer):
-    leads = LeadsModelSerializer(many=True, write_only=True)
+    leads = LeadsSerializer(many=True)
 
     class Meta:
         model = ECGModel
-        fields = ['id', 'date', 'leads']
-
-    def create(self, validated_data):
-        leads_data = validated_data.pop('leads')
-        ecg_instance = ECGModel.objects.create(**validated_data)
-
-        for lead_data in leads_data:
-            LeadsModel.objects.create(ecg=ecg_instance, **lead_data)
-
-        return ecg_instance
+        fields = '__all__'
 
 
 class ECGResponseSerializer(serializers.Serializer):
-    channel_name = serializers.CharField()
+    lead_name = serializers.CharField()
     zero_crossings_count = serializers.IntegerField()

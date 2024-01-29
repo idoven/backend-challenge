@@ -69,26 +69,12 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
-AUTHENTICATION_CLASSES = (
-    'rest_framework.authentication.SessionAuthentication',
-    'rest_framework.authentication.TokenAuthentication',
-)
+# AUTHENTICATION_CLASSES = (
+#     # 'rest_framework.authentication.SessionAuthentication',
+#     # 'rest_framework.authentication.TokenAuthentication',
+# )
 #
-# # Account settings
-# ACCOUNT_EMAIL_VERIFICATION = os.environ.get('ACCOUNT_EMAIL_VERIFICATION')
-# ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = os.environ.get('ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS')
-# ACCOUNT_UNIQUE_EMAIL = os.environ.get('ACCOUNT_UNIQUE_EMAIL')
-# ACCOUNT_AUTHENTICATION_METHOD = os.environ.get('ACCOUNT_AUTHENTICATION_METHOD')
-# ACCOUNT_EMAIL_REQUIRED = os.environ.get('ACCOUNT_EMAIL_REQUIRED')
-# ACCOUNT_USERNAME_REQUIRED = os.environ.get('ACCOUNT_USERNAME_REQUIRED')
-# ACCOUNT_USER_MODEL_USERNAME_FIELD = os.environ.get('ACCOUNT_USER_MODEL_USERNAME_FIELD')
-# ACCOUNT_USER_EMAIL_FIELD = os.environ.get('ACCOUNT_USER_EMAIL_FIELD')
-# ACCOUNT_LOGOUT_ON_GET = os.environ.get('ACCOUNT_LOGOUT_ON_GET')
-# ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = os.environ.get('ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION')
-# ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = os.environ.get('ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL')
-# ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = os.environ.get(
-#     'ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL')
-# ACCOUNT_EMAIL_CONFIRMATION_HMAC = os.environ.get('ACCOUNT_EMAIL_CONFIRMATION_HMAC')
+
 
 # Django REST Framework settings
 REST_USE_JWT = True  # Use JWT for authentication

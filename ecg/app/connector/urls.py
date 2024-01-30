@@ -13,6 +13,14 @@ urlpatterns = [
         views.ECGView.as_view({'get': 'retrieve_zero_crossing'}),
         name='ecg_monitoring',
     ),
-    path('api/login/', views.UserLoginView.as_view(), name='api-login'),
-    path('api/registration/', views.UserRegistrationView.as_view(), name='api-register'),
+    path(
+        'api/login/',
+        views.UserLoginView.as_view(),
+        name='api-login',
+    ),
+    path(
+        'api/registration/',
+        views.UserRegistrationView.as_view(),
+        name='api-register',
+    ),
 ]

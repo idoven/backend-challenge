@@ -15,6 +15,6 @@ drf-spectacular==0.26.2
 drf-spectacular-sidecar==2023.5.1
 
 gunicorn==20.1.0
-
 numpy==1.26.3
+pre-commit==2.20.0
 

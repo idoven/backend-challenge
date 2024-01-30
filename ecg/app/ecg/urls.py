@@ -10,22 +10,23 @@ Class-based views
     1. Add an import:  from other_app.views import Home
     2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
 Including another URLconf
-    1. Import the include() function: from django.urls import include, path
+    1. Import the include() function: from django.urls import include, path  # noqa
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.conf.urls import url
+# flake8: noqa: E501
+
+
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-from django.urls import include
+from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
 urlpatterns = [
-    url(r'^healthz/', include('health_check.urls')),
-    url(r'^api/', include('connector.urls')),
-    url(r'^schema/$', SpectacularAPIView.as_view(), name='schema'),
-    url(r'^swagger/$', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
-    url(r'^redoc/$', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
-    url(r'^admin/', admin.site.urls),
+    path('api/', include('connector.urls')),
+    path('schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+    path('admin/', admin.site.urls),
+    path('healthz/', include('health_check.urls')),
 ]
-
 urlpatterns += staticfiles_urlpatterns()

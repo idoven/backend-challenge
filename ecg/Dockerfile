@@ -1,6 +1,6 @@
 ARG environment
 FROM python:3.10.9
-
+# noqa: E501
 # set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1

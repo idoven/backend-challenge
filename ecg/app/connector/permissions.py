@@ -3,7 +3,7 @@ from rest_framework.permissions import BasePermission
 
 
 class HasECGDataPermission(BasePermission):
-    message = "Permission Denied"
+    message = 'Permission Denied'
 
     def has_object_permission(self, request, view, obj):
         # Check if the authenticated user matches the user who created the ECG

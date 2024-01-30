@@ -83,22 +83,27 @@ class ECGView(viewsets.ViewSet):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
 
-    serializer_class_response = ECGResponseSerializer
-    serializer_class_request = ECGModelSerializer
+    serializer_class_response_zero_crossing = ECGResponseSerializer
+    serializer_class = ECGModelSerializer
 
     def get_permissions(self):
         """
         Instantiates and returns the list of permissions
          that this view/method requires.
         """
-        if self.action == 'retrieve_zero_crossing':
+        if self.action in [
+            'retrieve_zero_crossing',
+            'delete',
+            'update',
+            'retrieve',
+        ]:
             return [permissions.IsAuthenticated(), HasECGDataPermission()]
         else:
             return [permissions.IsAuthenticated()]
 
     @extend_schema(
         responses={
-            200: OpenApiResponse(
+            201: OpenApiResponse(
                 description='Request success',
             ),
             400: OpenApiResponse(
@@ -111,7 +116,7 @@ class ECGView(viewsets.ViewSet):
                 description='Internal server error',
             ),
         },
-        request=serializer_class_request,
+        request=serializer_class,
     )
     def create(self, request):
         """
@@ -124,14 +129,54 @@ class ECGView(viewsets.ViewSet):
 
         return Response(
             data='ECG record created successfully',
-            status=status.HTTP_200_OK,
+            status=status.HTTP_201_CREATED,
+        )
+
+    @extend_schema(
+        responses={
+            201: OpenApiResponse(
+                description='Request success',
+            ),
+            400: OpenApiResponse(
+                description='Invalid value',
+            ),
+            403: OpenApiResponse(
+                description='Permission Denied',
+            ),
+            500: OpenApiResponse(
+                description='Internal server error',
+            ),
+        },
+        request=serializer_class,
+    )
+    def update(self, request):
+        """
+        Receives ECG data for processing
+        """
+        ecg_id = request.data.get('id')
+
+        ecg_instance = ECGOperations().get_ecg_instance(ecg_id)
+
+        # Check if the authenticated user
+        # has permission to retrieve this ECG data
+        self.check_object_permissions(request, ecg_instance)
+
+        ECGOperations().update_ecg_record(
+            ecg_data=request.data,
+            context={'request': request},
+            ecg_instance=ecg_instance,
+        )
+
+        return Response(
+            data='ECG record updated successfully',
+            status=status.HTTP_201_CREATED,
         )
 
     @extend_schema(
         responses={
             200: OpenApiResponse(
                 description='Request success',
-                response=serializer_class_response,
+                response=serializer_class_response_zero_crossing,
             ),
             404: OpenApiResponse(
                 description='Resource not available',
@@ -160,3 +205,72 @@ class ECGView(viewsets.ViewSet):
         response = ECGOperations().get_zero_crossing_count(ecg_instance)
 
         return Response(response, status=status.HTTP_200_OK)
+
+    @extend_schema(
+        responses={
+            200: OpenApiResponse(
+                description='Request success',
+                response=serializer_class,
+            ),
+            404: OpenApiResponse(
+                description='Resource not available',
+            ),
+            400: OpenApiResponse(
+                description='Invalid value',
+            ),
+            403: OpenApiResponse(
+                description='Permission Denied',
+            ),
+            500: OpenApiResponse(
+                description='Internal server error',
+            ),
+        },
+    )
+    def retrieve(self, request, ecg_id):
+        """
+        Returns the ECG data on given ID
+        """
+        ecg_instance = ECGOperations().get_ecg_instance(ecg_id)
+
+        # Check if the authenticated user
+        # has permission to retrieve this ECG data
+        self.check_object_permissions(request, ecg_instance)
+        serializer = self.serializer_class(ecg_instance)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @extend_schema(
+        responses={
+            201: OpenApiResponse(
+                description='Request success',
+            ),
+            404: OpenApiResponse(
+                description='Resource not available',
+            ),
+            400: OpenApiResponse(
+                description='Invalid value',
+            ),
+            403: OpenApiResponse(
+                description='Permission Denied',
+            ),
+            500: OpenApiResponse(
+                description='Internal server error',
+            ),
+        },
+    )
+    def delete(self, request, ecg_id):
+        """
+        Deletes ECG data on given id
+        """
+        ecg_instance = ECGOperations().get_ecg_instance(ecg_id)
+
+        # Check if the authenticated user
+        # has permission to delete this ECG data
+        self.check_object_permissions(request, ecg_instance)
+
+        ECGOperations().delete_ecg_record(ecg_instance)
+
+        return Response(
+            {f'ECG data on id {ecg_id} was successfully deleted'},
+            status=status.HTTP_200_OK,
+        )

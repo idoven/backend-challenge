@@ -13,7 +13,10 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 
 import os
+import sys
 from pathlib import Path
+
+TEST = 'test' in sys.argv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +28,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 AUTH_USER_MODEL = 'connector.UserModel'
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-@j^qopfkj#nn*t4872(n-vdt(+8e8a6ka13mnzm#kluy*ktxn#'
+SECRET_KEY = (
+    'django-insecure-@j^qopfkj#nn*t4872(n-vdt(+8e8a6ka13mnzm#kluy*ktxn#'
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -61,7 +66,9 @@ MIDDLEWARE = [
 
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',),
-    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -165,3 +172,23 @@ SPECTACULAR_SETTINGS = {
     'LICENSE': {'name': ''},
     'SWAGGER_UI_SETTINGS': {'displayOperationId': True},
 }
+
+if TEST:
+    from unittest.mock import patch
+
+    from connector.utils.test_mocker import mock_redlock
+
+    patch('connector.utils.tools.get_redis_client', mock_redlock).start()
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': ':memory:',
+        }
+    }
+
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+        }
+    }

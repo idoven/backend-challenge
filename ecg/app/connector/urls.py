@@ -4,23 +4,28 @@ from . import views
 
 urlpatterns = [
     path(
-        'api/ecg_monitoring',
-        views.ECGView.as_view({'post': 'create'}),
+        'ecg_monitoring',
+        views.ECGView.as_view({'post': 'create', 'put': 'update'}),
         name='ecg_monitoring',
     ),
     path(
-        'api/ecg_monitoring/zero_crossing/<str:ecg_id>',
+        'ecg_monitoring/<str:ecg_id>',
+        views.ECGView.as_view({'get': 'retrieve', 'delete': 'delete'}),
+        name='ecg_monitoring',
+    ),
+    path(
+        'ecg_monitoring/zero_crossing/<str:ecg_id>',
         views.ECGView.as_view({'get': 'retrieve_zero_crossing'}),
         name='ecg_monitoring',
     ),
     path(
-        'api/login/',
+        'login/',
         views.UserLoginView.as_view(),
-        name='api-login',
+        name='api_login',
     ),
     path(
-        'api/registration/',
+        'registration/',
         views.UserRegistrationView.as_view(),
-        name='api-register',
+        name='api_register',
     ),
 ]

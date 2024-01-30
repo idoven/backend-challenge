@@ -3,18 +3,12 @@ import logging
 
 import numpy as np
 from django.core.exceptions import ValidationError
-from rest_framework import status
 from rest_framework.exceptions import APIException, NotFound
 
 from connector import serializers
 from connector.models import ECGModel
 
 logger = logging.getLogger(__name__)
-
-
-class CustomValidationError(APIException):
-    status_code = status.HTTP_400_BAD_REQUEST
-    default_detail = 'Validation error'
 
 
 class ECGOperations:
@@ -62,21 +56,51 @@ class ECGOperations:
         except APIException as e:
             raise APIException(e)
 
+    def create_ecg_record(self, ecg_data, context):
+        """
+        Creates ECG record in database
 
-def create_ecg_record(self, ecg_data, context):
-    """
-    Creates ECG record in database
+        ecg_data: ECG data
+        """
+        try:
+            serializer = self.serializer_class(data=ecg_data, context=context)
+        except ECGModel.DoesNotExist as e:
+            raise NotFound(e)
+        except ValidationError as e:
+            raise ValidationError(e)
+        except APIException as e:
+            raise APIException(e)
 
-    ecg_data: ECG data
-    """
-    try:
-        serializer = self.serializer_class(data=ecg_data, context=context)
-    except ECGModel.DoesNotExist as e:
-        raise NotFound(e)
-    except ValidationError as e:
-        raise ValidationError(e)
-    except APIException as e:
-        raise APIException(e)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
 
-    serializer.is_valid(raise_exception=True)
-    serializer.save()
+    def update_ecg_record(self, ecg_data, context, ecg_instance):
+        """
+        Creates ECG record in database
+
+        ecg_data: ECG data
+        context: {'contect':request}
+        ecg_instance: ecg instance on given id
+        """
+        try:
+            serializer = self.serializer_class(
+                ecg_instance, data=ecg_data, context=context
+            )
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+        except ECGModel.DoesNotExist as e:
+            raise NotFound(e)
+        except ValidationError as e:
+            raise ValidationError(e)
+        except APIException as e:
+            raise APIException(e)
+
+    def delete_ecg_record(self, ecg_instance):
+        try:
+            ecg_instance.delete()
+        except ECGModel.DoesNotExist as e:
+            raise NotFound(e)
+        except ValidationError as e:
+            raise ValidationError(e)
+        except APIException as e:
+            raise APIException(e)

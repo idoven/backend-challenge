@@ -1,3 +1,4 @@
+import json
 import re
 
 from django.contrib.auth import authenticate
@@ -10,19 +11,13 @@ from connector.models import ECGModel, UserModel
 class UserLoginSerializer(serializers.Serializer):
     username = serializers.CharField(required=False)
     password = serializers.CharField(write_only=True)
-    email = serializers.EmailField(required=False)
 
     def validate(self, data):
         username = data.get('username')
-        email = data.get('email')
         password = data.get('password')
-        if (username or email) and password:
-            if username:
-                user = authenticate(username=username, password=password)
-            elif email:
-                user = authenticate(email=email, password=password)
-            else:
-                raise serializers.ValidationError('Invalid credentials')
+        if username and password:
+            user = authenticate(username=username, password=password)
+
             if user:
                 data['user'] = user
             else:
@@ -45,10 +40,8 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     def validate_password(self, value):
         # Check if password has at least 8 characters
         if len(value) < 8:
-            raise (
-                serializers.ValidationError(
-                    'Password must be at least 8 characters long.',
-                ),
+            raise serializers.ValidationError(
+                'Password must be at least 8 characters long.'
             )
 
         # Check if password has at least one uppercase letter
@@ -95,7 +88,33 @@ class LeadsSerializer(serializers.Serializer):
     num_samples = serializers.IntegerField(
         required=False, help_text='The sample size of the signal'
     )
-    signal = serializers.CharField(help_text='A list of integer values')
+    signal = serializers.CharField(
+        help_text='A list of integer values in the format [1, 2, 3, -4, 2, -6]'
+    )
+
+    def validate_signal(self, value):
+        try:
+            # Try to parse the input string as
+            # a JSON list of integers or floats
+            parsed_data = json.loads(value)
+
+            # Ensure the parsed data is a list of numbers (integers or floats)
+            if not isinstance(parsed_data, list) or not all(
+                isinstance(x, (int, float)) for x in parsed_data
+            ):
+                raise serializers.ValidationError(
+                    'Invalid signal format. '
+                    'Must be a list of numbers (integers or floats).'
+                )
+
+            return value  # Return originally received string
+        except (TypeError, ValueError):
+            # If parsing fails, raise a validation error
+            raise serializers.ValidationError(
+                'Invalid signal format.'
+                ' Must be a valid JSON list'
+                ' of numbers (integers or floats).'
+            )
 
 
 class ECGModelSerializer(serializers.ModelSerializer):
@@ -105,6 +124,7 @@ class ECGModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = ECGModel
         fields = '__all__'
+        read_only_fields = ('date',)
 
 
 class ECGResponseSerializer(serializers.Serializer):

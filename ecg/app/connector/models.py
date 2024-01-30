@@ -20,7 +20,7 @@ class UserModel(AbstractUser):
         },
         help_text='unique identifier of the user',
     )
-    name = models.CharField(max_length=20)
+    first_name = models.CharField(max_length=20)
     last_name = models.CharField(max_length=50)
     second_last_name = models.CharField(
         max_length=50,

@@ -18,17 +18,27 @@ class ECGAdmin(admin.ModelAdmin):
 
 
 class UserAdmin(BaseUserAdmin):
-    list_display = ('username', 'email', 'name', 'last_name', 'is_admin')
-    search_fields = ('username', 'email', 'name', 'last_name')
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_admin')
+    search_fields = ('username', 'email', 'first_name', 'last_name')
     ordering = ('username',)
 
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
         (
             ('Personal Info'),
-            {'fields': ('name', 'last_name', 'second_last_name', 'email')},
+            {
+                'fields': (
+                    'first_name',
+                    'last_name',
+                    'second_last_name',
+                    'email',
+                )
+            },
         ),
-        (('Permissions'), {'fields': ('is_active', 'is_admin', 'groups', 'is_staff')}),
+        (
+            ('Permissions'),
+            {'fields': ('is_active', 'is_admin', 'groups', 'is_staff')},
+        ),
         (('Important dates'), {'fields': ('last_login', 'date_joined')}),
     )
 
@@ -42,7 +52,7 @@ class UserAdmin(BaseUserAdmin):
                     'email',
                     'password1',
                     'password2',
-                    'name',
+                    'first_name',
                     'last_name',
                     'second_last_name',
                 ),

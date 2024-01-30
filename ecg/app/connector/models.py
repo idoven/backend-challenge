@@ -30,6 +30,8 @@ class ECGModel(models.Model):
     id = models.AutoField(primary_key=True, help_text='A unique identifier for each ECG')
     date = models.DateTimeField(auto_now_add=True, help_text='The date of creation')
     leads = models.JSONField()
+    user = models.ForeignKey(UserModel, on_delete=models.CASCADE, related_name='ecgs',
+                             help_text='The user who created the ECG')
 
     def __str__(self):
         return f"ECG {self.id}"

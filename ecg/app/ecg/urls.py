@@ -21,7 +21,7 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, Spec
 
 urlpatterns = [
     url(r'^healthz/', include('health_check.urls')),
-    url(r'^api/tecuidamos/', include('connector.urls')),
+    url(r'^api/', include('connector.urls')),
     url(r'^schema/$', SpectacularAPIView.as_view(), name='schema'),
     url(r'^swagger/$', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     url(r'^redoc/$', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),

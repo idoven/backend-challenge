@@ -23,7 +23,6 @@ class UserLoginSerializer(serializers.Serializer):
                 user = authenticate(email=email, password=password)
             else:
                 raise serializers.ValidationError('Invalid credentials')
-            print(f'\n\n##################################\n variable: {user}\n')
             if user:
                 data['user'] = user
             else:
@@ -62,12 +61,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         return super(UserRegistrationSerializer, self).create(validated_data)
 
 
-# class LeadsModelSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = LeadsModel
-#         fields = '__all__'
-
-
 class LeadsSerializer(serializers.Serializer):
     LEAD_IDENTIFIERS = ['I', 'II', 'III', 'aVR', 'aVL', 'aVF', 'V1', 'V2', 'V3', 'V4', 'V5', 'V6']
 
@@ -80,6 +73,7 @@ class LeadsSerializer(serializers.Serializer):
 
 class ECGModelSerializer(serializers.ModelSerializer):
     leads = LeadsSerializer(many=True)
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = ECGModel

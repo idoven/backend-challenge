@@ -33,28 +33,30 @@ class ECGOperations:
 
         return zero_crossing_count
 
-    def get_zero_crossing_count(self, ecg_id):
+    def get_zero_crossing_count(self, ecg_record):
         """
         Gets the ECG record from the database on given id
         returns number of times each ECG channel crosses zero
 
         ecg_id: the id of the ECG record
         """
+        leads = ecg_record.leads
+        response = []
+        for lead in leads:
+            signal = lead.get('signal')
+            zero_crossing_count = self._zero_crossing(signal)
+
+            response.append({
+                'zero_crossing_count': zero_crossing_count,
+                'lead_name': lead.get('name')
+            })
+
+        return response
+
+    def get_ecg_instance(self, ecg_id):
         try:
             ecg_record = ECGModel.objects.get(pk=ecg_id)
-            leads = ecg_record.leads
-            response = []
-            for lead in leads:
-                signal = lead.get('signal')
-                zero_crossing_count = self._zero_crossing(signal)
-
-                response.append({
-                    'zero_crossing_count': zero_crossing_count,
-                    'lead_name': lead.get('name')
-                })
-
-            return response
-
+            return ecg_record
         except ECGModel.DoesNotExist:
             error_message = 'Model/Record not found'
             logger.error(error_message)
@@ -67,14 +69,14 @@ class ECGOperations:
             logger.error(e)
             raise Exception(ERROR_LIST.INTERNAL_SERVER_ERROR, e.__cause__)
 
-    def create_ecg_record(self, params):
+    def create_ecg_record(self, ecg_data, context):
         """
         Creates ECG record in database
 
-        params: ECG data
+        ecg_data: ECG data
         """
         try:
-            serializer = self.serializer_class(data=params)
+            serializer = self.serializer_class(data=ecg_data, context=context)
         except ECGModel.DoesNotExist:
             error_message = 'Model/Record not found'
             logger.error(error_message)

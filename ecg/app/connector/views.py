@@ -1,12 +1,15 @@
-from rest_framework import status, viewsets
+from rest_framework import status, viewsets, permissions
 from connector import serializers
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-
+from .permissions import HasECGDataPermission
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import OpenApiResponse, extend_schema
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
+from rest_framework.exceptions import PermissionDenied
 
 from connector import operations
 
@@ -16,6 +19,8 @@ class UserLoginView(APIView):
     """
     User login view
     """
+    permission_classes = (AllowAny,)
+
     serializer_class = serializers.UserLoginSerializer
 
     @extend_schema(
@@ -44,6 +49,8 @@ class UserRegistrationView(APIView):
     """
     User registration view
     """
+    permission_classes = (AllowAny,)
+
     serializer_class = serializers.UserRegistrationSerializer
 
     @extend_schema(
@@ -71,11 +78,20 @@ class ECGView(viewsets.ViewSet):
     """
     ECG Monitoring application service
     """
-
-    permission_classes = (AllowAny,)
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
 
     serializer_class_response = serializers.ECGResponseSerializer
     serializer_class_request = serializers.ECGModelSerializer
+
+    def get_permissions(self):
+        """
+        Instantiates and returns the list of permissions that this view/method requires.
+        """
+        if self.action == 'retrieve_zero_crossing':
+            return [permissions.IsAuthenticated(), HasECGDataPermission()]
+        else:
+            return [permissions.IsAuthenticated()]
 
     @extend_schema(
         responses={
@@ -92,7 +108,7 @@ class ECGView(viewsets.ViewSet):
         """
         Receives ECG data for processing
         """
-        operations.ECGOperations().create_ecg_record(request.data)
+        operations.ECGOperations().create_ecg_record(ecg_data=request.data, context={'request': request})
 
         return Response(f'ECG record created successfully', status=status.HTTP_200_OK)
 
@@ -107,10 +123,15 @@ class ECGView(viewsets.ViewSet):
             500: OpenApiResponse(description='Internal server error'),
         },
     )
-    def retrieve(self, request, ecg_id):
+    def retrieve_zero_crossing(self, request, ecg_id):
         """
          Returns the number of times each ECG channel crosses zero
         """
-        response = operations.ECGOperations().get_zero_crossing_count(ecg_id)
+        ecg_instance = operations.ECGOperations().get_ecg_instance(ecg_id)
 
-        return Response({'zero_crossing_count': response}, status=status.HTTP_200_OK)
+        # Check if the authenticated user has permission to retrieve this ECG data
+        self.check_object_permissions(request, ecg_instance)
+
+        response = operations.ECGOperations().get_zero_crossing_count(ecg_instance)
+
+        return Response(response, status=status.HTTP_200_OK)

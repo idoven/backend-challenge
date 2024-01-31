@@ -43,7 +43,7 @@ services:
       - REDIS_PORT_6379_TCP_PORT=6379
 
   ecg-db:
-    platform: linux/x86_64 # Necessary for MacOS M1 Chip
+#    platform: linux/x86_64 # Necessary for MacOS M1 Chip
     image: mysql:5.7.37
     env_file:
       - .env.ecg

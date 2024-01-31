@@ -96,6 +96,10 @@ class ECGOperations:
             raise APIException(e)
 
     def delete_ecg_record(self, ecg_instance):
+        """
+        Deletes ECG record in database
+        ecg_instance: ecg instance on given id
+        """
         try:
             ecg_instance.delete()
         except ECGModel.DoesNotExist as e:

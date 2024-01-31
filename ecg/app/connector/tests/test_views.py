@@ -4,6 +4,7 @@ from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.authtoken.models import Token
+from rest_framework.exceptions import NotFound
 from rest_framework.test import APIClient
 
 from connector.models import UserModel
@@ -140,6 +141,88 @@ class ECGViewTest(TestCase):
         # and the response status code is OK
         mock_get_ecg_instance.assert_called_once()
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @patch('connector.operations.ECGOperations.get_ecg_instance')
+    @patch('connector.operations.ECGOperations.update_ecg_record')
+    def test_update_ecg_success(
+        self, mock_update_ecg_record, mock_get_ecg_instance
+    ):
+        # Mock the get_ecg_instance method to return a mock ECG instance
+        mock_ecg_instance = self.ECGInstance(user=self.user)
+        mock_get_ecg_instance.return_value = mock_ecg_instance
+
+        # Mock the update_ecg_record method
+        mock_update_ecg_record.return_value = None
+
+        data = {
+            'id': 1,
+            'leads': [
+                {'name': 'I', 'num_samples': 0, 'signal': '[1,2,3,-4]'},
+            ],
+        }
+
+        response = self.client.put(
+            reverse(self.URL_NAME_ECG),
+            data=data,
+            format='json',
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        mock_get_ecg_instance.assert_called_once()
+
+    @patch('connector.operations.ECGOperations.get_ecg_instance')
+    def test_update_ecg_permission_denied(self, mock_get_ecg_instance):
+        # Mock the get_ecg_instance method to return a mock ECG instance
+        mock_ecg_instance = self.ECGInstance(user=self.user_2)
+        mock_get_ecg_instance.return_value = mock_ecg_instance
+
+        data = {
+            'id': 1,
+            'leads': [
+                {'name': 'I', 'num_samples': 0, 'signal': '[1,2,3,-4]'},
+            ],
+        }
+
+        response = self.client.put(
+            reverse(self.URL_NAME_ECG),
+            data=data,
+            format='json',
+        )
+        # Assert that the status code is 403 Forbidden
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @patch('connector.operations.ECGOperations.get_ecg_instance')
+    def test_update_ecg_not_found(self, mock_get_ecg_instance):
+        # Mock the get_ecg_instance method to raise a NotFound exception
+        mock_get_ecg_instance.side_effect = NotFound
+
+        data = {
+            'id': 2,
+            'leads': [
+                {'name': 'I', 'num_samples': 0, 'signal': '[1,2,3,-4]'},
+            ],
+        }
+
+        response = self.client.put(
+            reverse(self.URL_NAME_ECG),
+            data=data,
+            format='json',
+        )
+        # Assert that the status code is 404 Not Found
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    @patch('connector.operations.ECGOperations.get_ecg_instance')
+    def test_retrieve_ecg_success(self, mock_get_ecg_instance):
+        # Mock the get_ecg_instance method to return a mock ECG instance
+        mock_ecg_instance = self.ECGInstance(user=self.user)
+        mock_get_ecg_instance.return_value = mock_ecg_instance
+
+        ecg_id = '1'
+
+        response = self.client.get(
+            self.ecg_url_get,
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        mock_get_ecg_instance.assert_called_once_with(ecg_id)
 
     @patch('connector.operations.ECGOperations.get_ecg_instance')
     @patch('connector.operations.ECGOperations.delete_ecg_record')
